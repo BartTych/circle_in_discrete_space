@@ -6,7 +6,7 @@ from matplotlib.ticker import MultipleLocator
 
 
 center_point = (0, 0)
-x_range = range(100, 150)
+x_range = range(75, 125)
 y_range = range(100, 150)
 
 hypotenuse = [

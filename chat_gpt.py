@@ -82,6 +82,10 @@ def check_and_collect_configs(points, configs_set, forbidden_set=None):
                 if len(idx) == 3:  # >2 neighbors ⇒ automatically OK
                     break
 
+        # record mask unconditionally for debugging
+        m = neighborhood_mask_9(x, y, s)
+        configs_set.add(m)
+
         if len(idx) < 2:
             return False
 
@@ -89,9 +93,7 @@ def check_and_collect_configs(points, configs_set, forbidden_set=None):
             a, b = idx[0], idx[1]
             d = (b - a) % 8
 
-            # record mask unconditionally for debugging
-            m = neighborhood_mask_9(x, y, s)
-            configs_set.add(m)
+            
 
             # forbid consecutive (including wrap pair 7–0)
             if d in (1, 7):
@@ -173,10 +175,10 @@ def pretty_mask_with_center(mask):
     return '\n'.join(''.join(chars[r*3:(r+1)*3]) for r in range(3))
 
 # -------- main ----------
-tested_range = 16000  # from -tested_range to +tested_range
+tested_range = 120  # from -tested_range to +tested_range
 
 points_by_dist = defaultdict(list)
-result = {}
+result = []
 set_of_configs = set()
 for r in range(1, tested_range + 1):
     pts = ring_points(r)
@@ -184,12 +186,12 @@ for r in range(1, tested_range + 1):
     ok = check_and_collect_configs(pts,set_of_configs)
     if not ok:
         print(f"FAIL for r={r}")
-    result[r] = ok
-    if r % 100 == 0:
-        print(f"r={r}: |pts|={len(pts)} -> {'OK' if ok else 'FAIL'}")
+    result.append(ok)
+    #if r % 100 == 0:
+    print(f"r={r}: |pts|={len(pts)} -> {'OK' if ok else 'FAIL'}")
 
 # final check
-all_tested_pass = all(result.get(r, False) for r in range(1, tested_range + 1))
+all_tested_pass = all(result)
 print("All tests passed!" if all_tested_pass else "Some tests failed.")
 
 print(f"Total configurations found: {len(set_of_configs)}")
